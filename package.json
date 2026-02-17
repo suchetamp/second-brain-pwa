@@ -1,0 +1,9 @@
+code
+JSON
+{
+  "name": "second-brain-pwa",
+  "version": "1.0.0",
+  "dependencies": {
+    "@notionhq/client": "^2.2.3"
+  }
+}
