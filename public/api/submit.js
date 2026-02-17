@@ -1,10 +1,10 @@
-ode
-JavaScript
+
+
 const { Client } = require('@notionhq/client');
 
 const notion = new Client({ auth: process.env.NOTION_KEY });
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -42,4 +42,4 @@ export default async function handler(req, res) {
     console.error(error);
     res.status(500).json({ error: error.message });
   }
-}
+};
