@@ -1,9 +1,10 @@
-code
-JSON
+
+< > JSON
 {
   "name": "second-brain-pwa",
   "version": "1.0.0",
   "dependencies": {
+    "express": "^4.18.2",
     "@notionhq/client": "^2.2.3"
   }
 }
