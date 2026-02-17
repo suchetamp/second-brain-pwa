@@ -57,36 +57,47 @@ Html
 
             if(!title) { alert("Please add a title"); return; }
 
+            // UI: Saving state
+            const originalText = btn.innerText;
             btn.innerText = "SAVING...";
             btn.classList.add("opacity-75");
 
             try {
-                // Note: Vercel API path is /api/submit
                 const response = await fetch('/api/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title, content, category })
                 });
 
-                const result = await response.json();
+                // Try to parse JSON. If Vercel crashes hard, this might be HTML.
+                let result;
+                const text = await response.text(); 
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    throw new Error("Server returned non-JSON error: " + text.substring(0, 100));
+                }
 
                 if (response.ok) {
+                    // Success
                     btn.innerText = "SAVED! ✓";
                     btn.classList.replace("bg-black", "bg-green-500");
                     setTimeout(() => {
                         document.getElementById('titleInput').value = "";
                         document.getElementById('contentInput').value = "";
-                        btn.innerText = "CAPTURE TO NOTION";
+                        btn.innerText = originalText;
                         btn.classList.replace("bg-green-500", "bg-black");
                         btn.classList.remove("opacity-75");
                     }, 1500);
                 } else {
-                    alert("Error: " + result.error);
-                    btn.innerText = "CAPTURE TO NOTION";
+                    // Show the specific backend error
+                    alert("Error: " + (result.error || "Unknown error"));
+                    btn.innerText = originalText;
                 }
             } catch (error) {
-                alert("Network Error");
-                btn.innerText = "CAPTURE TO NOTION";
+                // Show network/parsing errors
+                alert("Connection Failed: " + error.message);
+                btn.innerText = originalText;
             }
         }
     </script>
