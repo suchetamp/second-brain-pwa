@@ -1,0 +1,94 @@
+ode
+Html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Second Brain Capture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col">
+
+    <!-- Header -->
+    <div class="pt-8 pb-4 px-6">
+        <h1 class="text-2xl font-bold text-gray-800 tracking-tight">Capture</h1>
+    </div>
+
+    <!-- Main Form -->
+    <div class="flex-1 px-6 flex flex-col space-y-6">
+        
+        <input type="text" id="titleInput" placeholder="Title..." 
+            class="w-full text-xl font-medium bg-transparent border-b-2 border-gray-200 focus:border-black focus:outline-none py-2 placeholder-gray-400 transition-colors">
+
+        <textarea id="contentInput" placeholder="Paste link, type notes, or dictate..." 
+            class="w-full flex-1 bg-white p-4 rounded-xl text-lg text-gray-700 placeholder-gray-400 focus:outline-none shadow-sm resize-none"></textarea>
+
+        <!-- The Toggle -->
+        <div class="bg-gray-200 p-1 rounded-lg flex relative">
+            <input type="radio" name="category" id="cat-work" value="Work" class="peer/work hidden" checked>
+            <input type="radio" name="category" id="cat-personal" value="Personal" class="peer/personal hidden">
+
+            <label for="cat-work" class="w-1/2 text-center py-3 rounded-md text-sm font-bold text-gray-500 cursor-pointer transition-all peer-checked/work:bg-blue-600 peer-checked/work:text-white">
+                WORK
+            </label>
+            <label for="cat-personal" class="w-1/2 text-center py-3 rounded-md text-sm font-bold text-gray-500 cursor-pointer transition-all peer-checked/personal:bg-green-600 peer-checked/personal:text-white">
+                PERSONAL
+            </label>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-6 pb-8">
+        <button onclick="submitData()" id="submitBtn" class="w-full bg-black text-white text-lg font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform">
+            CAPTURE TO NOTION
+        </button>
+    </div>
+
+    <script>
+        async function submitData() {
+            const btn = document.getElementById('submitBtn');
+            const title = document.getElementById('titleInput').value;
+            const content = document.getElementById('contentInput').value;
+            const category = document.querySelector('input[name="category"]:checked').value;
+
+            if(!title) { alert("Please add a title"); return; }
+
+            btn.innerText = "SAVING...";
+            btn.classList.add("opacity-75");
+
+            try {
+                // Note: Vercel API path is /api/submit
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, content, category })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    btn.innerText = "SAVED! ✓";
+                    btn.classList.replace("bg-black", "bg-green-500");
+                    setTimeout(() => {
+                        document.getElementById('titleInput').value = "";
+                        document.getElementById('contentInput').value = "";
+                        btn.innerText = "CAPTURE TO NOTION";
+                        btn.classList.replace("bg-green-500", "bg-black");
+                        btn.classList.remove("opacity-75");
+                    }, 1500);
+                } else {
+                    alert("Error: " + result.error);
+                    btn.innerText = "CAPTURE TO NOTION";
+                }
+            } catch (error) {
+                alert("Network Error");
+                btn.innerText = "CAPTURE TO NOTION";
+            }
+        }
+    </script>
+</body>
+</html>
