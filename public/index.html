@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,81 +9,100 @@
     <style>
         body { -webkit-tap-highlight-color: transparent; }
         body { overscroll-behavior-y: none; }
-        /* Smooth fade transition */
+        
+        /* Custom Scrollbar for Dark Mode */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+
+        /* Smooth Appear Animation */
         .fade-enter {
             opacity: 0;
-            transform: translateY(-5px);
+            transform: translateY(-10px);
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
         .fade-enter-active {
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Glow Effects */
+        .glow-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        .glow-green { box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); }
+        .glow-orange { box-shadow: 0 0 15px rgba(249, 115, 22, 0.5); }
     </style>
 </head>
-<body class="bg-gray-50 h-screen flex flex-col font-sans">
+<body class="bg-gray-900 h-screen flex flex-col font-sans text-gray-100 selection:bg-purple-500 selection:text-white">
 
     <!-- Header -->
-    <div class="pt-8 pb-4 px-6">
-        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Second Brain</h1>
+    <div class="pt-10 pb-2 px-6">
+        <h1 class="text-3xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500 uppercase">
+            Second Brain
+        </h1>
+        <p class="text-xs text-gray-500 font-mono mt-1 tracking-widest">SYSTEM ONLINE</p>
     </div>
 
     <!-- Main Form -->
-    <div class="flex-1 px-6 flex flex-col space-y-5 overflow-y-auto pb-6">
+    <div class="flex-1 px-6 flex flex-col space-y-6 overflow-y-auto pb-6 custom-scrollbar">
         
-        <!-- Title -->
-        <input type="text" id="titleInput" placeholder="Title..." 
-            class="w-full text-xl font-medium bg-transparent border-b-2 border-gray-200 focus:border-black focus:outline-none py-2 placeholder-gray-400 transition-colors rounded-none">
+        <!-- Toggle Switch (The Control Center) -->
+        <div class="bg-gray-800 p-1 rounded-xl flex relative shrink-0 border border-gray-700 shadow-inner">
+            <input type="radio" name="category" id="cat-work" value="Work" class="peer/work hidden" onchange="updateTheme(true)">
+            <input type="radio" name="category" id="cat-personal" value="Personal" class="peer/personal hidden" onchange="updateTheme(false)" checked>
 
-        <!-- Body -->
-        <textarea id="contentInput" placeholder="Paste link, type notes, or dictate..." 
-            class="w-full h-32 bg-white p-4 rounded-xl text-lg text-gray-700 placeholder-gray-400 focus:outline-none shadow-sm resize-none"></textarea>
-
-        <!-- Toggle Switch -->
-        <div class="bg-gray-200 p-1 rounded-lg flex relative shrink-0">
-            <input type="radio" name="category" id="cat-work" value="Work" class="peer/work hidden" onchange="toggleSections(true)">
-            <input type="radio" name="category" id="cat-personal" value="Personal" class="peer/personal hidden" onchange="toggleSections(false)" checked>
-
-            <label for="cat-work" class="w-1/2 text-center py-3 rounded-md text-sm font-bold text-gray-500 cursor-pointer transition-all peer-checked/work:bg-blue-600 peer-checked/work:text-white shadow-sm">
+            <!-- Work Label -->
+            <label for="cat-work" class="w-1/2 text-center py-3 rounded-lg text-sm font-bold text-gray-400 cursor-pointer transition-all duration-300 
+                peer-checked/work:bg-blue-600 peer-checked/work:text-white peer-checked/work:shadow-[0_0_20px_rgba(37,99,235,0.4)] peer-checked/work:scale-[1.02]">
                 WORK
             </label>
-            <label for="cat-personal" class="w-1/2 text-center py-3 rounded-md text-sm font-bold text-gray-500 cursor-pointer transition-all peer-checked/personal:bg-green-600 peer-checked/personal:text-white shadow-sm">
+
+            <!-- Personal Label -->
+            <label for="cat-personal" class="w-1/2 text-center py-3 rounded-lg text-sm font-bold text-gray-400 cursor-pointer transition-all duration-300 
+                peer-checked/personal:bg-emerald-600 peer-checked/personal:text-white peer-checked/personal:shadow-[0_0_20px_rgba(5,150,105,0.4)] peer-checked/personal:scale-[1.02]">
                 PERSONAL
             </label>
         </div>
 
-        <!-- WORK SECTION (Function + Priority) -->
-        <div id="workSection" class="hidden space-y-5 transition-all duration-300 ease-in-out">
-            
-            <!-- Function (Multi-Select) -->
+        <!-- Title Input -->
+        <div class="relative group">
+            <input type="text" id="titleInput" placeholder="Input Title..." 
+                class="w-full text-xl font-bold bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-4 placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-white">
+        </div>
+
+        <!-- Body Input -->
+        <div class="relative flex-1 min-h-[150px]">
+            <textarea id="contentInput" placeholder="Enter stream of consciousness..." 
+                class="w-full h-full bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-base text-gray-300 placeholder-gray-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all resize-none shadow-inner leading-relaxed"></textarea>
+        </div>
+
+        <!-- WORK SECTION -->
+        <div id="workSection" class="hidden space-y-6 transition-all duration-300 ease-in-out">
+            <!-- Function -->
             <div>
-                <p class="text-xs font-bold text-gray-400 uppercase mb-2 tracking-wider">Function (Multi)</p>
+                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em]">Function Protocol</p>
                 <div class="flex flex-wrap gap-2" id="functionContainer"></div>
             </div>
-
-            <!-- Priority (Single-Select) -->
+            <!-- Priority -->
             <div>
-                <p class="text-xs font-bold text-gray-400 uppercase mb-2 tracking-wider">Priority (Single)</p>
+                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em]">Priority Level</p>
                 <div class="flex flex-wrap gap-2" id="priorityContainer"></div>
             </div>
         </div>
 
-        <!-- PERSONAL SECTION (Interests) -->
-        <div id="personalSection" class="hidden space-y-5 transition-all duration-300 ease-in-out">
-            
-            <!-- Interest (Single-Select) -->
+        <!-- PERSONAL SECTION -->
+        <div id="personalSection" class="hidden space-y-6 transition-all duration-300 ease-in-out">
+            <!-- Interest -->
             <div>
-                <p class="text-xs font-bold text-gray-400 uppercase mb-2 tracking-wider">Interest (Single)</p>
+                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em]">Interest Type</p>
                 <div class="flex flex-wrap gap-2" id="interestContainer"></div>
             </div>
         </div>
-
     </div>
 
-    <!-- Footer Button -->
-    <div class="p-6 pb-8 bg-gray-50 border-t border-gray-100">
-        <button onclick="submitData()" id="submitBtn" class="w-full bg-black text-white text-lg font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform duration-200">
-            CAPTURE TO NOTION
+    <!-- Footer -->
+    <div class="p-6 pb-8 bg-gray-900 border-t border-gray-800">
+        <button onclick="submitData()" id="submitBtn" class="w-full bg-emerald-600 text-white text-lg font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(5,150,105,0.3)] active:scale-95 transition-all duration-200 border border-white/10 tracking-wide hover:brightness-110">
+            INITIATE CAPTURE
         </button>
     </div>
 
@@ -91,103 +111,113 @@
         const DATA = {
             function: ["S&F", "B&M", "Team", "Prod", "AI&E", "Comm", "Workbench"],
             priority: [
-                { label: "🔥 Burning", value: "Burning" },
-                { label: "🔴 High", value: "High" },
-                { label: "🟡 Medium", value: "Medium" },
-                { label: "🔵 Low", value: "Low" },
-                { label: "🧠 Gyaan-Reading", value: "Gyaan-Reading" }
+                { label: "🔥 Burning", value: "Burning", color: "bg-red-600 border-red-500 glow-orange" },
+                { label: "🔴 High", value: "High", color: "bg-orange-600 border-orange-500 glow-orange" },
+                { label: "🟡 Medium", value: "Medium", color: "bg-yellow-600 border-yellow-500" },
+                { label: "🔵 Low", value: "Low", color: "bg-blue-600 border-blue-500" },
+                { label: "🧠 Gyaan", value: "Gyaan-Reading", color: "bg-purple-600 border-purple-500" }
             ],
             interest: [
-                { label: "🧗 Trekking &Outdoors", value: "Trekking &Outdoors" },
-                { label: "🧸 Kids & S-O-P", value: "Kids & S-O-P" },
-                { label: "🍳 Cooking & Shooting", value: "Cooking & Shooting" },
-                { label: "🎾 Ten-Run-Gym", value: "Ten-Run-Gym" },
-                { label: "💡 Reading & Inspiration", value: "Reading & Inspiration" }
+                { label: "🧗 Trekking", value: "Trekking &Outdoors" },
+                { label: "🧸 Kids/SOP", value: "Kids & S-O-P" },
+                { label: "🍳 Cook/Shoot", value: "Cooking & Shooting" },
+                { label: "🎾 Gym/Run", value: "Ten-Run-Gym" },
+                { label: "💡 Read/Inspire", value: "Reading & Inspiration" }
             ]
         };
 
-        // State Storage
-        let state = {
-            functions: new Set(),
-            priority: null,
-            interest: null
-        };
+        // State
+        let state = { functions: new Set(), priority: null, interest: null };
 
         // --- UI BUILDERS ---
-
-        function createChip(containerId, text, value, type) {
+        function createChip(containerId, text, value, type, customColorClass) {
             const container = document.getElementById(containerId);
             const btn = document.createElement('button');
             btn.innerText = text;
-            // Base style
-            btn.className = "px-4 py-2 rounded-full text-sm font-medium border border-gray-300 bg-white text-gray-600 transition-all active:scale-95";
+            // Base Dark Mode Chip Style
+            btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700 hover:text-gray-200";
             
             btn.onclick = () => {
                 if (type === 'function') toggleMulti(btn, value);
-                else if (type === 'priority') toggleSingle('priority', btn, value, containerId);
-                else if (type === 'interest') toggleSingle('interest', btn, value, containerId);
+                else if (type === 'priority') toggleSingle('priority', btn, value, containerId, customColorClass);
+                else if (type === 'interest') toggleSingle('interest', btn, value, containerId, "bg-emerald-600 border-emerald-500 glow-green");
             };
-            
-            // Store value on element for single-select reset
             btn.dataset.value = value;
             container.appendChild(btn);
         }
 
-        // Initialize All Chips
+        // Init Chips
         DATA.function.forEach(f => createChip('functionContainer', f, f, 'function'));
-        DATA.priority.forEach(p => createChip('priorityContainer', p.label, p.value, 'priority'));
+        DATA.priority.forEach(p => createChip('priorityContainer', p.label, p.value, 'priority', p.color));
         DATA.interest.forEach(i => createChip('interestContainer', i.label, i.value, 'interest'));
 
         // --- LOGIC ---
 
-        // Multi-Select Logic (Functions)
         function toggleMulti(btn, value) {
             if (state.functions.has(value)) {
                 state.functions.delete(value);
-                btn.className = "px-4 py-2 rounded-full text-sm font-medium border border-gray-300 bg-white text-gray-600 transition-all active:scale-95";
+                // Reset to Dark Base
+                btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700";
             } else {
                 state.functions.add(value);
-                btn.className = "px-4 py-2 rounded-full text-sm font-medium border-transparent bg-black text-white shadow-md transition-all active:scale-95";
+                // Active Blue Glow
+                btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-blue-500 bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)] transition-all active:scale-95";
             }
         }
 
-        // Single-Select Logic (Priority & Interest)
-        function toggleSingle(type, btn, value, containerId) {
-            // Deselect previous if exists
+        function toggleSingle(type, btn, value, containerId, activeClass) {
             if (state[type] === value) {
-                // Allow unselecting
                 state[type] = null;
-                btn.className = "px-4 py-2 rounded-full text-sm font-medium border border-gray-300 bg-white text-gray-600 transition-all active:scale-95";
+                btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700";
             } else {
-                // Reset all in container
+                // Reset siblings
                 const container = document.getElementById(containerId);
                 Array.from(container.children).forEach(child => {
-                    child.className = "px-4 py-2 rounded-full text-sm font-medium border border-gray-300 bg-white text-gray-600 transition-all active:scale-95";
+                    child.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700";
                 });
-                
-                // Select new
                 state[type] = value;
-                btn.className = "px-4 py-2 rounded-full text-sm font-medium border-transparent bg-black text-white shadow-md transition-all active:scale-95";
+                // Active State with Custom Color
+                btn.className = `px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border text-white transition-all active:scale-95 ${activeClass}`;
             }
         }
 
-        // Section Toggle Logic
-        function toggleSections(isWork) {
+        // Theme Switcher (Blue vs Green)
+        function updateTheme(isWork) {
             const workSec = document.getElementById('workSection');
             const personalSec = document.getElementById('personalSection');
+            const btn = document.getElementById('submitBtn');
+            const title = document.getElementById('titleInput');
+            const content = document.getElementById('contentInput');
 
             if (isWork) {
+                // Switch Sections
                 workSec.classList.remove('hidden');
                 workSec.classList.add('fade-enter-active');
                 personalSec.classList.add('hidden');
+                
+                // Update Colors to Blue
+                btn.className = "w-full bg-blue-600 text-white text-lg font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.4)] active:scale-95 transition-all duration-200 border border-white/10 tracking-wide hover:brightness-110";
+                title.classList.replace('focus:border-emerald-500', 'focus:border-blue-500');
+                title.classList.replace('focus:ring-emerald-500', 'focus:ring-blue-500');
+                content.classList.replace('focus:border-emerald-500', 'focus:border-blue-500');
+                content.classList.replace('focus:ring-emerald-500', 'focus:ring-blue-500');
+                
             } else {
+                // Switch Sections
                 workSec.classList.add('hidden');
                 personalSec.classList.remove('hidden');
                 personalSec.classList.add('fade-enter-active');
+
+                // Update Colors to Emerald/Green
+                btn.className = "w-full bg-emerald-600 text-white text-lg font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(5,150,105,0.4)] active:scale-95 transition-all duration-200 border border-white/10 tracking-wide hover:brightness-110";
+                title.classList.replace('focus:border-blue-500', 'focus:border-emerald-500');
+                title.classList.replace('focus:ring-blue-500', 'focus:ring-emerald-500');
+                content.classList.replace('focus:border-blue-500', 'focus:border-emerald-500');
+                content.classList.replace('focus:ring-blue-500', 'focus:ring-emerald-500');
             }
         }
 
-        // --- SUBMIT LOGIC ---
+        // Submit Logic (Identical Backend Call)
         async function submitData() {
             const btn = document.getElementById('submitBtn');
             const titleInput = document.getElementById('titleInput');
@@ -196,10 +226,11 @@
 
             if(!titleInput.value.trim()) { alert("Please add a title"); return; }
 
-            // UX: Saving State
             const originalText = btn.innerText;
-            btn.innerText = "SAVING...";
-            btn.classList.add("opacity-75");
+            const originalClass = btn.className;
+            
+            btn.innerText = "UPLOADING...";
+            btn.classList.add("opacity-75", "cursor-not-allowed");
             btn.disabled = true;
 
             const payload = { 
@@ -220,47 +251,49 @@
 
                 const text = await response.text();
                 let result;
-                try { result = JSON.parse(text); } catch (e) { throw new Error("Server Error: " + text.substring(0, 100)); }
+                try { result = JSON.parse(text); } catch (e) { throw new Error("Server Error"); }
 
                 if (response.ok) {
-                    btn.innerText = "SAVED! ✓";
-                    btn.classList.replace("bg-black", "bg-green-500");
+                    btn.innerText = "UPLOAD COMPLETE";
+                    btn.className = "w-full bg-gray-100 text-black text-lg font-bold py-4 rounded-xl shadow-lg transition-all duration-200 border border-white tracking-wide";
+                    
                     setTimeout(() => {
-                        // Reset inputs
                         titleInput.value = "";
                         contentInput.value = "";
-                        // Reset State
                         state.functions.clear();
                         state.priority = null;
                         state.interest = null;
-                        // Reset Visuals
+                        
+                        // Reset Buttons Visuals
                         document.querySelectorAll('#functionContainer button, #priorityContainer button, #interestContainer button').forEach(b => {
-                            b.className = "px-4 py-2 rounded-full text-sm font-medium border border-gray-300 bg-white text-gray-600 transition-all active:scale-95";
+                            b.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700";
                         });
 
                         btn.innerText = originalText;
-                        btn.classList.replace("bg-green-500", "bg-black");
-                        btn.classList.remove("opacity-75");
+                        btn.className = originalClass;
                         btn.disabled = false;
+                        btn.classList.remove("opacity-75", "cursor-not-allowed");
                     }, 1500);
                 } else {
                     alert("Error: " + (result.error || "Unknown"));
                     btn.innerText = originalText;
+                    btn.className = originalClass;
                     btn.disabled = false;
                     btn.classList.remove("opacity-75");
                 }
             } catch (error) {
-                alert("Network Error: " + error.message);
+                alert("Network Error");
                 btn.innerText = originalText;
+                btn.className = originalClass;
                 btn.disabled = false;
                 btn.classList.remove("opacity-75");
             }
         }
 
-        // Initial Load Check
+        // Init Theme
         document.addEventListener('DOMContentLoaded', () => {
              const isWork = document.getElementById('cat-work').checked;
-             toggleSections(isWork);
+             updateTheme(isWork);
         });
     </script>
 </body>
