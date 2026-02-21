@@ -1,23 +1,22 @@
 const { Client } = require('@notionhq/client');
 
 module.exports = async (req, res) => {
-  // 1. Setup CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // 2. Parse Input (Including new 'functions' array)
-  const { title, content, category, functions } = req.body || {};
+  // Parse new fields
+  const { title, content, category, functions, priority, interest } = req.body || {};
 
   try {
-    if (!process.env.NOTION_KEY) throw new Error("Missing NOTION_KEY in Vercel.");
-    if (!process.env.NOTION_DB_ID) throw new Error("Missing NOTION_DB_ID in Vercel.");
+    if (!process.env.NOTION_KEY) throw new Error("Missing NOTION_KEY.");
+    if (!process.env.NOTION_DB_ID) throw new Error("Missing NOTION_DB_ID.");
 
     const notion = new Client({ auth: process.env.NOTION_KEY.trim() });
 
-    // 3. Construct Properties
+    // Base Properties
     const dbProperties = {
       Name: {
         title: [
@@ -29,14 +28,33 @@ module.exports = async (req, res) => {
       },
     };
 
-    // 4. Add Function logic (Only if Work AND functions selected)
-    if (category === 'Work' && functions && functions.length > 0) {
-      dbProperties['Function'] = {
-        multi_select: functions.map(f => ({ name: f }))
-      };
+    // Conditional Logic for WORK
+    if (category === 'Work') {
+        // Add Function (Multi-select)
+        if (functions && functions.length > 0) {
+            dbProperties['Function'] = {
+                multi_select: functions.map(f => ({ name: f }))
+            };
+        }
+        // Add Priority (Single Select)
+        if (priority) {
+            dbProperties['Priority'] = {
+                select: { name: priority }
+            };
+        }
     }
 
-    // 5. Send to Notion
+    // Conditional Logic for PERSONAL
+    if (category === 'Personal') {
+        // Add Interest (Single Select)
+        if (interest) {
+            dbProperties['Interest'] = {
+                select: { name: interest }
+            };
+        }
+    }
+
+    // Send to Notion
     const response = await notion.pages.create({
       parent: { database_id: process.env.NOTION_DB_ID.trim() },
       properties: dbProperties,
