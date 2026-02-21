@@ -1,40 +1,33 @@
+code
+Markdown
+# Second Brain PWA (Level 3)
 
-# Second Brain PWA (MVP)
-
-A fast, mobile-first Progressive Web App to capture thoughts directly into a Notion Database.
+A mobile-first "Capture" tool designed to feed a Notion Second Brain system. It uses a dynamic interface to categorize inputs into Work or Personal streams instantly.
 
 ## Features
-- **Instant Capture:** Title and Body text.
-- **Categorization:** Simple toggle for "Work" vs "Personal".
-- **Notion Integration:** Uses the Notion API to save data instantly.
-- **Mobile Optimized:** Large touch targets and "Add to Home Screen" ready.
+- **Smart Toggle:** Toggling between "Work" and "Personal" instantly changes the available fields.
+- **Work Flow:** Captures Title, Notes, Functions (Multi-select), and Priority (Fire/High/Med/Low).
+- **Personal Flow:** Captures Title, Notes, and Specific Interests (Trekking, Kids, etc.).
+- **Visual Feedback:** Uses Emoji-based chips for quick visual recognition.
+- **Speed:** Zero-friction interface designed for one-handed mobile use.
 
-## Setup Instructions
+## Notion Database Setup
+To make this app work, your Notion Database must have these exact columns:
 
-### 1. Notion Setup
-1. Create a new Full Page Database.
-2. Delete all default properties except `Name`.
-3. Add a **Select Property** named `Category`. Add options: `Work`, `Personal`.
-4. Create a new Integration at [Notion Developers](https://www.notion.so/my-integrations).
-5. **Important:** Go to your Database page -> `...` -> `Connections` -> Add your new integration.
-
-### 2. Deployment (Vercel)
-1. Fork/Clone this repo to your GitHub.
-2. Import project into [Vercel](https://vercel.com).
-3. Add Environment Variables in Vercel Settings:
-
-| Variable Name | Value | Notes |
+| Column Name | Type | Options (Exact Spelling) |
 | :--- | :--- | :--- |
-| `NOTION_KEY` | `secret_...` or `ntn_...` | Your Internal Integration Secret. |
-| `NOTION_DB_ID` | `32-char-code` | The ID found in your Database URL (between / and ?). |
+| `Name` | Title | - |
+| `Category` | Select | `Work`, `Personal` |
+| `Function` | Multi-select | `S&F`, `B&M`, `Team`, `Prod`, `AI&E`, `Comm`, `Workbench` |
+| `Priority` | Select | `Burning`, `High`, `Medium`, `Low`, `Gyaan-Reading` |
+| `Interest` | Select | `Trekking &Outdoors`, `Kids & S-O-P`, `Cooking & Shooting`, `Ten-Run-Gym`, `Reading & Inspiration` |
 
-### 3. Troubleshooting Vercel Errors
-If the app fails to save:
-1. **Check for Spaces:** Ensure `NOTION_KEY` and `NOTION_DB_ID` do not have spaces at the start or end.
-2. **Check ID Format:** The `NOTION_DB_ID` should NOT include `https://notion.so/`. It is just the 32-character code.
-3. **Redeploy:** After changing any Environment Variable, you MUST go to Deployments -> Redeploy.
+## Environment Variables (Vercel)
+The app requires two secrets to run:
+1. `NOTION_KEY`: Your Internal Integration Token (starts with `secret_` or `ntn_`).
+2. `NOTION_DB_ID`: The 32-character ID from your Database URL.
 
-## Project Structure
-- `api/submit.js`: Serverless function that talks to Notion securely.
-- `public/index.html`: The user interface.
-- `package.json`: Configuration for Vercel.
+## Tech Stack
+- **Frontend:** HTML5, Tailwind CSS, Vanilla JS.
+- **Backend:** Node.js (Serverless via Vercel).
+- **Database:** Notion API.
