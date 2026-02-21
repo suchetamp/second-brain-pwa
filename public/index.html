@@ -1,17 +1,17 @@
-ode
-Html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Second Brain Capture</title>
+    <title>Capture</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { -webkit-tap-highlight-color: transparent; }
+        /* Prevent pull-to-refresh on mobile */
+        body { overscroll-behavior-y: none; }
     </style>
 </head>
-<body class="bg-gray-50 h-screen flex flex-col">
+<body class="bg-gray-50 h-screen flex flex-col font-sans">
 
     <!-- Header -->
     <div class="pt-8 pb-4 px-6">
@@ -21,29 +21,31 @@ Html
     <!-- Main Form -->
     <div class="flex-1 px-6 flex flex-col space-y-6">
         
+        <!-- Title -->
         <input type="text" id="titleInput" placeholder="Title..." 
-            class="w-full text-xl font-medium bg-transparent border-b-2 border-gray-200 focus:border-black focus:outline-none py-2 placeholder-gray-400 transition-colors">
+            class="w-full text-xl font-medium bg-transparent border-b-2 border-gray-200 focus:border-black focus:outline-none py-2 placeholder-gray-400 transition-colors rounded-none">
 
+        <!-- Body -->
         <textarea id="contentInput" placeholder="Paste link, type notes, or dictate..." 
             class="w-full flex-1 bg-white p-4 rounded-xl text-lg text-gray-700 placeholder-gray-400 focus:outline-none shadow-sm resize-none"></textarea>
 
-        <!-- The Toggle -->
+        <!-- Toggle Switch -->
         <div class="bg-gray-200 p-1 rounded-lg flex relative">
             <input type="radio" name="category" id="cat-work" value="Work" class="peer/work hidden" checked>
             <input type="radio" name="category" id="cat-personal" value="Personal" class="peer/personal hidden">
 
-            <label for="cat-work" class="w-1/2 text-center py-3 rounded-md text-sm font-bold text-gray-500 cursor-pointer transition-all peer-checked/work:bg-blue-600 peer-checked/work:text-white">
+            <label for="cat-work" class="w-1/2 text-center py-3 rounded-md text-sm font-bold text-gray-500 cursor-pointer transition-all peer-checked/work:bg-blue-600 peer-checked/work:text-white shadow-sm">
                 WORK
             </label>
-            <label for="cat-personal" class="w-1/2 text-center py-3 rounded-md text-sm font-bold text-gray-500 cursor-pointer transition-all peer-checked/personal:bg-green-600 peer-checked/personal:text-white">
+            <label for="cat-personal" class="w-1/2 text-center py-3 rounded-md text-sm font-bold text-gray-500 cursor-pointer transition-all peer-checked/personal:bg-green-600 peer-checked/personal:text-white shadow-sm">
                 PERSONAL
             </label>
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer Button -->
     <div class="p-6 pb-8">
-        <button onclick="submitData()" id="submitBtn" class="w-full bg-black text-white text-lg font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform">
+        <button onclick="submitData()" id="submitBtn" class="w-full bg-black text-white text-lg font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform duration-200">
             CAPTURE TO NOTION
         </button>
     </div>
@@ -51,53 +53,65 @@ Html
     <script>
         async function submitData() {
             const btn = document.getElementById('submitBtn');
-            const title = document.getElementById('titleInput').value;
-            const content = document.getElementById('contentInput').value;
+            const titleInput = document.getElementById('titleInput');
+            const contentInput = document.getElementById('contentInput');
             const category = document.querySelector('input[name="category"]:checked').value;
 
-            if(!title) { alert("Please add a title"); return; }
+            if(!titleInput.value.trim()) { 
+                alert("Please add a title"); 
+                return; 
+            }
 
-            // UI: Saving state
+            // UX: Saving State
             const originalText = btn.innerText;
             btn.innerText = "SAVING...";
             btn.classList.add("opacity-75");
+            btn.disabled = true;
 
             try {
                 const response = await fetch('/api/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, content, category })
+                    body: JSON.stringify({ 
+                        title: titleInput.value, 
+                        content: contentInput.value, 
+                        category: category 
+                    })
                 });
 
-                // Try to parse JSON. If Vercel crashes hard, this might be HTML.
+                // Handle non-JSON responses (Server Crashes)
+                const text = await response.text();
                 let result;
-                const text = await response.text(); 
                 try {
                     result = JSON.parse(text);
                 } catch (e) {
-                    throw new Error("Server returned non-JSON error: " + text.substring(0, 100));
+                    throw new Error("Server Error: " + text.substring(0, 100));
                 }
 
                 if (response.ok) {
-                    // Success
+                    // Success Animation
                     btn.innerText = "SAVED! ✓";
                     btn.classList.replace("bg-black", "bg-green-500");
+                    
                     setTimeout(() => {
-                        document.getElementById('titleInput').value = "";
-                        document.getElementById('contentInput').value = "";
+                        titleInput.value = "";
+                        contentInput.value = "";
                         btn.innerText = originalText;
                         btn.classList.replace("bg-green-500", "bg-black");
                         btn.classList.remove("opacity-75");
+                        btn.disabled = false;
                     }, 1500);
                 } else {
-                    // Show the specific backend error
-                    alert("Error: " + (result.error || "Unknown error"));
+                    alert("Error: " + (result.error || "Unknown"));
                     btn.innerText = originalText;
+                    btn.disabled = false;
+                    btn.classList.remove("opacity-75");
                 }
             } catch (error) {
-                // Show network/parsing errors
-                alert("Connection Failed: " + error.message);
+                alert("Network Error: " + error.message);
                 btn.innerText = originalText;
+                btn.disabled = false;
+                btn.classList.remove("opacity-75");
             }
         }
     </script>
