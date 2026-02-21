@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,12 +9,12 @@
         body { -webkit-tap-highlight-color: transparent; }
         body { overscroll-behavior-y: none; }
         
-        /* Custom Scrollbar for Dark Mode */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #111827; }
         ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
 
-        /* Smooth Appear Animation */
+        /* Animation */
         .fade-enter {
             opacity: 0;
             transform: translateY(-10px);
@@ -28,63 +27,73 @@
 
         /* Glow Effects */
         .glow-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
-        .glow-green { box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); }
+        .glow-purple { box-shadow: 0 0 15px rgba(192, 38, 211, 0.5); } /* New Purple Glow */
         .glow-orange { box-shadow: 0 0 15px rgba(249, 115, 22, 0.5); }
+        
+        /* Glitchy Text Effect for Header */
+        .cyber-text {
+            text-shadow: 2px 2px 0px rgba(59, 130, 246, 0.3), -2px -2px 0px rgba(192, 38, 211, 0.3);
+        }
     </style>
 </head>
-<body class="bg-gray-900 h-screen flex flex-col font-sans text-gray-100 selection:bg-purple-500 selection:text-white">
+<body class="bg-gray-900 h-screen flex flex-col font-sans text-gray-100 selection:bg-fuchsia-500 selection:text-white">
 
-    <!-- Header -->
-    <div class="pt-10 pb-2 px-6">
-        <h1 class="text-3xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500 uppercase">
-            Second Brain
-        </h1>
-        <p class="text-xs text-gray-500 font-mono mt-1 tracking-widest">SYSTEM ONLINE</p>
+    <!-- Header (Edgier Design) -->
+    <div class="pt-10 pb-4 px-6">
+        <div class="flex items-center space-x-3">
+            <span class="text-4xl filter drop-shadow-lg">🧠</span>
+            <div>
+                <h1 class="text-3xl font-mono font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-fuchsia-400 uppercase cyber-text italic">
+                    SECOND // BRAIN
+                </h1>
+                <p class="text-[10px] text-gray-500 font-mono tracking-[0.3em] mt-1 pl-1">NEURAL LINK ACTIVE</p>
+            </div>
+        </div>
     </div>
 
     <!-- Main Form -->
     <div class="flex-1 px-6 flex flex-col space-y-6 overflow-y-auto pb-6 custom-scrollbar">
         
-        <!-- Toggle Switch (The Control Center) -->
+        <!-- Toggle Switch -->
         <div class="bg-gray-800 p-1 rounded-xl flex relative shrink-0 border border-gray-700 shadow-inner">
             <input type="radio" name="category" id="cat-work" value="Work" class="peer/work hidden" onchange="updateTheme(true)">
             <input type="radio" name="category" id="cat-personal" value="Personal" class="peer/personal hidden" onchange="updateTheme(false)" checked>
 
-            <!-- Work Label -->
-            <label for="cat-work" class="w-1/2 text-center py-3 rounded-lg text-sm font-bold text-gray-400 cursor-pointer transition-all duration-300 
+            <!-- Work Label (Blue) -->
+            <label for="cat-work" class="w-1/2 text-center py-3 rounded-lg text-sm font-bold text-gray-400 cursor-pointer transition-all duration-300 font-mono tracking-wider
                 peer-checked/work:bg-blue-600 peer-checked/work:text-white peer-checked/work:shadow-[0_0_20px_rgba(37,99,235,0.4)] peer-checked/work:scale-[1.02]">
                 WORK
             </label>
 
-            <!-- Personal Label -->
-            <label for="cat-personal" class="w-1/2 text-center py-3 rounded-lg text-sm font-bold text-gray-400 cursor-pointer transition-all duration-300 
-                peer-checked/personal:bg-emerald-600 peer-checked/personal:text-white peer-checked/personal:shadow-[0_0_20px_rgba(5,150,105,0.4)] peer-checked/personal:scale-[1.02]">
+            <!-- Personal Label (New Purple/Fuchsia) -->
+            <label for="cat-personal" class="w-1/2 text-center py-3 rounded-lg text-sm font-bold text-gray-400 cursor-pointer transition-all duration-300 font-mono tracking-wider
+                peer-checked/personal:bg-fuchsia-600 peer-checked/personal:text-white peer-checked/personal:shadow-[0_0_20px_rgba(192,38,211,0.4)] peer-checked/personal:scale-[1.02]">
                 PERSONAL
             </label>
         </div>
 
         <!-- Title Input -->
         <div class="relative group">
-            <input type="text" id="titleInput" placeholder="Input Title..." 
-                class="w-full text-xl font-bold bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-4 placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-white">
+            <input type="text" id="titleInput" placeholder="INPUT DATA TITLE..." 
+                class="w-full text-xl font-bold font-mono bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-4 placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-white uppercase tracking-tight">
         </div>
 
         <!-- Body Input -->
         <div class="relative flex-1 min-h-[150px]">
-            <textarea id="contentInput" placeholder="Enter stream of consciousness..." 
-                class="w-full h-full bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-base text-gray-300 placeholder-gray-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all resize-none shadow-inner leading-relaxed"></textarea>
+            <textarea id="contentInput" placeholder="Initialize stream..." 
+                class="w-full h-full bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-base text-gray-300 placeholder-gray-600 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 transition-all resize-none shadow-inner leading-relaxed font-mono"></textarea>
         </div>
 
         <!-- WORK SECTION -->
         <div id="workSection" class="hidden space-y-6 transition-all duration-300 ease-in-out">
             <!-- Function -->
             <div>
-                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em]">Function Protocol</p>
+                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em] font-mono">Function Protocol</p>
                 <div class="flex flex-wrap gap-2" id="functionContainer"></div>
             </div>
             <!-- Priority -->
             <div>
-                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em]">Priority Level</p>
+                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em] font-mono">Priority Level</p>
                 <div class="flex flex-wrap gap-2" id="priorityContainer"></div>
             </div>
         </div>
@@ -93,7 +102,7 @@
         <div id="personalSection" class="hidden space-y-6 transition-all duration-300 ease-in-out">
             <!-- Interest -->
             <div>
-                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em]">Interest Type</p>
+                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em] font-mono">Interest Matrix</p>
                 <div class="flex flex-wrap gap-2" id="interestContainer"></div>
             </div>
         </div>
@@ -101,8 +110,8 @@
 
     <!-- Footer -->
     <div class="p-6 pb-8 bg-gray-900 border-t border-gray-800">
-        <button onclick="submitData()" id="submitBtn" class="w-full bg-emerald-600 text-white text-lg font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(5,150,105,0.3)] active:scale-95 transition-all duration-200 border border-white/10 tracking-wide hover:brightness-110">
-            INITIATE CAPTURE
+        <button onclick="submitData()" id="submitBtn" class="w-full bg-fuchsia-600 text-white text-lg font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(192,38,211,0.3)] active:scale-95 transition-all duration-200 border border-white/10 tracking-widest font-mono hover:brightness-110">
+            UPLOAD TO DATABASE
         </button>
     </div>
 
@@ -126,7 +135,6 @@
             ]
         };
 
-        // State
         let state = { functions: new Set(), priority: null, interest: null };
 
         // --- UI BUILDERS ---
@@ -135,53 +143,48 @@
             const btn = document.createElement('button');
             btn.innerText = text;
             // Base Dark Mode Chip Style
-            btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700 hover:text-gray-200";
+            btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700 hover:text-gray-200 font-mono";
             
             btn.onclick = () => {
                 if (type === 'function') toggleMulti(btn, value);
                 else if (type === 'priority') toggleSingle('priority', btn, value, containerId, customColorClass);
-                else if (type === 'interest') toggleSingle('interest', btn, value, containerId, "bg-emerald-600 border-emerald-500 glow-green");
+                // Updated Interest Color to Purple/Fuchsia
+                else if (type === 'interest') toggleSingle('interest', btn, value, containerId, "bg-fuchsia-600 border-fuchsia-500 glow-purple");
             };
             btn.dataset.value = value;
             container.appendChild(btn);
         }
 
-        // Init Chips
         DATA.function.forEach(f => createChip('functionContainer', f, f, 'function'));
         DATA.priority.forEach(p => createChip('priorityContainer', p.label, p.value, 'priority', p.color));
         DATA.interest.forEach(i => createChip('interestContainer', i.label, i.value, 'interest'));
 
         // --- LOGIC ---
-
         function toggleMulti(btn, value) {
             if (state.functions.has(value)) {
                 state.functions.delete(value);
-                // Reset to Dark Base
-                btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700";
+                btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700 font-mono";
             } else {
                 state.functions.add(value);
-                // Active Blue Glow
-                btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-blue-500 bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)] transition-all active:scale-95";
+                btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-blue-500 bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)] transition-all active:scale-95 font-mono";
             }
         }
 
         function toggleSingle(type, btn, value, containerId, activeClass) {
             if (state[type] === value) {
                 state[type] = null;
-                btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700";
+                btn.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700 font-mono";
             } else {
-                // Reset siblings
                 const container = document.getElementById(containerId);
                 Array.from(container.children).forEach(child => {
-                    child.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700";
+                    child.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700 font-mono";
                 });
                 state[type] = value;
-                // Active State with Custom Color
-                btn.className = `px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border text-white transition-all active:scale-95 ${activeClass}`;
+                btn.className = `px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border text-white transition-all active:scale-95 font-mono ${activeClass}`;
             }
         }
 
-        // Theme Switcher (Blue vs Green)
+        // Theme Switcher (Blue vs Purple)
         function updateTheme(isWork) {
             const workSec = document.getElementById('workSection');
             const personalSec = document.getElementById('personalSection');
@@ -190,34 +193,35 @@
             const content = document.getElementById('contentInput');
 
             if (isWork) {
-                // Switch Sections
                 workSec.classList.remove('hidden');
                 workSec.classList.add('fade-enter-active');
                 personalSec.classList.add('hidden');
                 
-                // Update Colors to Blue
-                btn.className = "w-full bg-blue-600 text-white text-lg font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.4)] active:scale-95 transition-all duration-200 border border-white/10 tracking-wide hover:brightness-110";
-                title.classList.replace('focus:border-emerald-500', 'focus:border-blue-500');
-                title.classList.replace('focus:ring-emerald-500', 'focus:ring-blue-500');
-                content.classList.replace('focus:border-emerald-500', 'focus:border-blue-500');
-                content.classList.replace('focus:ring-emerald-500', 'focus:ring-blue-500');
+                // Blue Theme
+                btn.className = "w-full bg-blue-600 text-white text-lg font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.4)] active:scale-95 transition-all duration-200 border border-white/10 tracking-widest font-mono hover:brightness-110";
+                
+                title.classList.replace('focus:border-fuchsia-500', 'focus:border-blue-500');
+                title.classList.replace('focus:ring-fuchsia-500', 'focus:ring-blue-500');
+                
+                content.classList.replace('focus:border-fuchsia-500', 'focus:border-blue-500');
+                content.classList.replace('focus:ring-fuchsia-500', 'focus:ring-blue-500');
                 
             } else {
-                // Switch Sections
                 workSec.classList.add('hidden');
                 personalSec.classList.remove('hidden');
                 personalSec.classList.add('fade-enter-active');
 
-                // Update Colors to Emerald/Green
-                btn.className = "w-full bg-emerald-600 text-white text-lg font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(5,150,105,0.4)] active:scale-95 transition-all duration-200 border border-white/10 tracking-wide hover:brightness-110";
-                title.classList.replace('focus:border-blue-500', 'focus:border-emerald-500');
-                title.classList.replace('focus:ring-blue-500', 'focus:ring-emerald-500');
-                content.classList.replace('focus:border-blue-500', 'focus:border-emerald-500');
-                content.classList.replace('focus:ring-blue-500', 'focus:ring-emerald-500');
+                // Purple/Fuchsia Theme
+                btn.className = "w-full bg-fuchsia-600 text-white text-lg font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(192,38,211,0.4)] active:scale-95 transition-all duration-200 border border-white/10 tracking-widest font-mono hover:brightness-110";
+                
+                title.classList.replace('focus:border-blue-500', 'focus:border-fuchsia-500');
+                title.classList.replace('focus:ring-blue-500', 'focus:ring-fuchsia-500');
+                
+                content.classList.replace('focus:border-blue-500', 'focus:border-fuchsia-500');
+                content.classList.replace('focus:ring-blue-500', 'focus:ring-fuchsia-500');
             }
         }
 
-        // Submit Logic (Identical Backend Call)
         async function submitData() {
             const btn = document.getElementById('submitBtn');
             const titleInput = document.getElementById('titleInput');
@@ -229,7 +233,7 @@
             const originalText = btn.innerText;
             const originalClass = btn.className;
             
-            btn.innerText = "UPLOADING...";
+            btn.innerText = "TRANSMITTING...";
             btn.classList.add("opacity-75", "cursor-not-allowed");
             btn.disabled = true;
 
@@ -255,7 +259,7 @@
 
                 if (response.ok) {
                     btn.innerText = "UPLOAD COMPLETE";
-                    btn.className = "w-full bg-gray-100 text-black text-lg font-bold py-4 rounded-xl shadow-lg transition-all duration-200 border border-white tracking-wide";
+                    btn.className = "w-full bg-gray-100 text-black text-lg font-bold py-4 rounded-xl shadow-lg transition-all duration-200 border border-white tracking-widest font-mono";
                     
                     setTimeout(() => {
                         titleInput.value = "";
@@ -264,9 +268,8 @@
                         state.priority = null;
                         state.interest = null;
                         
-                        // Reset Buttons Visuals
                         document.querySelectorAll('#functionContainer button, #priorityContainer button, #interestContainer button').forEach(b => {
-                            b.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700";
+                            b.className = "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-gray-700 bg-gray-800 text-gray-400 transition-all active:scale-95 hover:bg-gray-700 font-mono";
                         });
 
                         btn.innerText = originalText;
@@ -290,7 +293,6 @@
             }
         }
 
-        // Init Theme
         document.addEventListener('DOMContentLoaded', () => {
              const isWork = document.getElementById('cat-work').checked;
              updateTheme(isWork);
