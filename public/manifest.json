@@ -7,7 +7,7 @@
   "theme_color": "#C026D3",
   "icons": [
     {
-      "src": "/SBIcon512.png", 
+      "src": "https://uxwing.com/wp-content/themes/uxwing/download/health-sickness-organs/brain-line-icon.png", 
       "sizes": "512x512",
       "type": "image/png"
     }
