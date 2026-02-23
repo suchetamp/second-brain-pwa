@@ -7,7 +7,7 @@
   "theme_color": "#C026D3",
   "icons": [
     {
-      "src": "https://github.com/suchetamp/second-brain-pwa/blob/main/public/SB%20Icon.png", 
+      "src": "https://github.com/suchetamp/second-brain-pwa/blob/main/public/SBIcon512.png", 
       "sizes": "512x512",
       "type": "image/png"
     }
