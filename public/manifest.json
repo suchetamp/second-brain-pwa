@@ -1,0 +1,15 @@
+{
+  "name": "Second Brain",
+  "short_name": "Brain",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#C026D3",
+  "icons": [
+    {
+      "src": "https://www.notion.so/image/placeholder.png", 
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
