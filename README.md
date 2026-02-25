@@ -31,3 +31,5 @@ The app requires two secrets to run:
 - **Frontend:** HTML5, Tailwind CSS, Vanilla JS.
 - **Backend:** Node.js (Serverless via Vercel).
 - **Database:** Notion API.
+
+## Trying to fix the file path for manifest.json in the vercel organization
