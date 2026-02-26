@@ -1,72 +1,104 @@
 const { Client } = require('@notionhq/client');
 const formidable = require('formidable');
-const { URLSearchParams } = require('url'); // Needed to handle URL Encoded data fallback
+
+// Helper to allow Vercel to wait for the Form parsing
+export const config = {
+  api: {
+    bodyParser: false, // Disable Vercel's default JSON parser for this route so Formidable can work
+  },
+};
 
 module.exports = async (req, res) => {
+  // 1. CORS Setup
   res.setHeader('Access-Control-Allow-Origin', '*');
-  
-  const path = req.url; 
-  
+  res.setHeader('Access-Control-Allow-Methods', 'POST');
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
+    // 2. Validate Environment Variables
     if (!process.env.NOTION_KEY) throw new Error("Missing NOTION_KEY.");
     if (!process.env.NOTION_DB_ID) throw new Error("Missing NOTION_DB_ID.");
 
     const notion = new Client({ auth: process.env.NOTION_KEY.trim() });
-    let sharedData = {};
+    let finalData = {};
 
-    // --- NEW: Handle Form/Multipart Data from Share Target ---
-    if (path.startsWith('/share-target')) {
-        // Use Formidable to parse the incoming data stream
-        const form = formidable({});
+    // 3. Determine Request Type (Share Sheet vs PWA Button)
+    const contentType = req.headers['content-type'] || '';
+
+    if (contentType.includes('multipart/form-data')) {
+        // --- CASE A: From Android Share Sheet ---
+        // We must parse the form data stream
+        const form = new formidable.IncomingForm();
         
-        const [fields] = await form.parse(req);
-        
-        // The shared data comes through in the 'text' field as defined in manifest.json
-        sharedData = {
-            title: fields.title ? fields.title[0] : 'Shared Link', // Use shared title if provided, else default
-            content: fields.text ? fields.text[0] : '', // This gets the URL/Text from the share sheet
-            category: fields.category ? fields.category[0] : 'Personal', // Default category if not set by PWA button
-            // Other fields (functions, priority, interest) will be undefined here, which is fine.
+        const formData = await new Promise((resolve, reject) => {
+            form.parse(req, (err, fields, files) => {
+                if (err) reject(err);
+                resolve({ fields, files });
+            });
+        });
+
+        // Extract data (Formidable returns arrays, we take the first item)
+        // Manifest params: title, text, url
+        const rawTitle = formData.fields.title ? formData.fields.title[0] : '';
+        const rawText = formData.fields.text ? formData.fields.text[0] : '';
+        const rawUrl = formData.fields.url ? formData.fields.url[0] : '';
+
+        finalData = {
+            title: rawTitle || 'Shared Entry', 
+            content: rawUrl || rawText || '', // Prefer URL if specific, else text
+            category: 'Personal', // Default category for shares
+            functions: [],
+            priority: null,
+            interest: null
         };
 
     } else {
-        // --- Existing Logic: Handle data from the PWA's own capture button (Assumes JSON) ---
-        const body = req.body || {};
-        sharedData = {
+        // --- CASE B: From PWA Button (JSON) ---
+        // Since we disabled the default bodyParser at the top, we must parse JSON manually here
+        const buffers = [];
+        for await (const chunk of req) {
+            buffers.push(chunk);
+        }
+        const data = Buffer.concat(buffers).toString();
+        const body = JSON.parse(data);
+
+        finalData = {
             title: body.title,
             content: body.content,
-            category: body.category,
-            functions: body.functions,
+            category: body.category || 'Personal',
+            functions: body.functions || [],
             priority: body.priority,
-            interest: body.interest,
+            interest: body.interest
         };
     }
-    
-    // Sanitize and prepare Notion Properties (using collected sharedData)
+
+    // 4. Construct Notion Properties
     const dbProperties = {
-      Name: { title: [{ text: { content: sharedData.title || "Shared Link - Title Needed" } }] },
-      Category: { select: { name: sharedData.category || "Personal" } },
+      Name: { title: [{ text: { content: finalData.title || "Untitled" } }] },
+      Category: { select: { name: finalData.category } },
     };
 
-    if (sharedData.category === 'Work') {
-        if (sharedData.functions && sharedData.functions.length > 0) {
-            dbProperties['Function'] = { multi_select: sharedData.functions.map(f => ({ name: f })) };
+    // Logic: Work
+    if (finalData.category === 'Work') {
+        if (finalData.functions && finalData.functions.length > 0) {
+            dbProperties['Function'] = { multi_select: finalData.functions.map(f => ({ name: f })) };
         }
-        if (sharedData.priority) {
-            dbProperties['Priority'] = { select: { name: sharedData.priority } };
-        }
-    }
-
-    if (sharedData.category === 'Personal') {
-        if (sharedData.interest) {
-            dbProperties['Interest'] = { select: { name: interest } };
+        if (finalData.priority) {
+            dbProperties['Priority'] = { select: { name: finalData.priority } };
         }
     }
 
+    // Logic: Personal
+    if (finalData.category === 'Personal') {
+        if (finalData.interest) {
+            dbProperties['Interest'] = { select: { name: finalData.interest } };
+        }
+    }
+
+    // 5. Send to Notion
     const response = await notion.pages.create({
       parent: { database_id: process.env.NOTION_DB_ID.trim() },
       properties: dbProperties,
@@ -75,7 +107,7 @@ module.exports = async (req, res) => {
           object: 'block',
           type: 'paragraph',
           paragraph: {
-            rich_text: [{ type: 'text', text: { content: sharedData.content || "Shared content received." } }],
+            rich_text: [{ type: 'text', text: { content: finalData.content || " " } }],
           },
         },
       ],
