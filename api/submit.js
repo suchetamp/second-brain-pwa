@@ -1,4 +1,6 @@
 const { Client } = require('@notionhq/client');
+const formidable = require('formidable');
+const { URLSearchParams } = require('url'); // Needed to handle URL Encoded data fallback
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -6,49 +8,61 @@ module.exports = async (req, res) => {
   const path = req.url; 
   
   if (req.method !== 'POST') {
-    if (path.startsWith('/share-target')) {
-        return res.status(405).json({ error: 'Share Target requires POST method' });
-    }
     return res.status(405).json({ error: 'Method not allowed' });
   }
-// OLD:
-// const { title, content, category, functions, priority, interest } = req.body || {};
-// NEW: You need a way to parse form data. Since we can't add a library easily
-// without a new deploy step, we will rely on the standard Node/Vercel parser.
-// For now, let's ensure the code handles missing fields better:
-const data = req.body || {}; // Assume data is available but might not be JSON parsed yet
 
-// *** Since we cannot easily add new dependencies here, the most direct fix
-// *** is to ensure the main submission path in index.html sends URLENCODED data
-// *** or to use a dependency like 'formidable' or 'multer' in package.json and submit.js. ***
-
-// For the immediate fix, let's assume Vercel's default Node setup might handle it if we check the body structure.
-// Revert to the previous structure, but ensure the request is POST:
-const { title, content, category, functions, priority, interest } = req.body || {}; 
-// (Keep the code as it was when it sent the success message)
-  
   try {
     if (!process.env.NOTION_KEY) throw new Error("Missing NOTION_KEY.");
     if (!process.env.NOTION_DB_ID) throw new Error("Missing NOTION_DB_ID.");
 
     const notion = new Client({ auth: process.env.NOTION_KEY.trim() });
+    let sharedData = {};
 
+    // --- NEW: Handle Form/Multipart Data from Share Target ---
+    if (path.startsWith('/share-target')) {
+        // Use Formidable to parse the incoming data stream
+        const form = formidable({});
+        
+        const [fields] = await form.parse(req);
+        
+        // The shared data comes through in the 'text' field as defined in manifest.json
+        sharedData = {
+            title: fields.title ? fields.title[0] : 'Shared Link', // Use shared title if provided, else default
+            content: fields.text ? fields.text[0] : '', // This gets the URL/Text from the share sheet
+            category: fields.category ? fields.category[0] : 'Personal', // Default category if not set by PWA button
+            // Other fields (functions, priority, interest) will be undefined here, which is fine.
+        };
+
+    } else {
+        // --- Existing Logic: Handle data from the PWA's own capture button (Assumes JSON) ---
+        const body = req.body || {};
+        sharedData = {
+            title: body.title,
+            content: body.content,
+            category: body.category,
+            functions: body.functions,
+            priority: body.priority,
+            interest: body.interest,
+        };
+    }
+    
+    // Sanitize and prepare Notion Properties (using collected sharedData)
     const dbProperties = {
-      Name: { title: [{ text: { content: title || "Untitled Shared Entry" } }] },
-      Category: { select: { name: category || "Personal" } },
+      Name: { title: [{ text: { content: sharedData.title || "Shared Link - Title Needed" } }] },
+      Category: { select: { name: sharedData.category || "Personal" } },
     };
 
-    if (category === 'Work') {
-        if (functions && functions.length > 0) {
-            dbProperties['Function'] = { multi_select: functions.map(f => ({ name: f })) };
+    if (sharedData.category === 'Work') {
+        if (sharedData.functions && sharedData.functions.length > 0) {
+            dbProperties['Function'] = { multi_select: sharedData.functions.map(f => ({ name: f })) };
         }
-        if (priority) {
-            dbProperties['Priority'] = { select: { name: priority } };
+        if (sharedData.priority) {
+            dbProperties['Priority'] = { select: { name: sharedData.priority } };
         }
     }
 
-    if (category === 'Personal') {
-        if (interest) {
+    if (sharedData.category === 'Personal') {
+        if (sharedData.interest) {
             dbProperties['Interest'] = { select: { name: interest } };
         }
     }
@@ -61,7 +75,7 @@ const { title, content, category, functions, priority, interest } = req.body || 
           object: 'block',
           type: 'paragraph',
           paragraph: {
-            rich_text: [{ type: 'text', text: { content: content || "Shared content received." } }],
+            rich_text: [{ type: 'text', text: { content: sharedData.content || "Shared content received." } }],
           },
         },
       ],
