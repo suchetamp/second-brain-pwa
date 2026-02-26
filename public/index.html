@@ -202,34 +202,30 @@
              updateTheme(isWork);
         });
 // --- NEW: SERVICE WORKER MESSAGE LISTENER ---
+// --- NEW LISTENER IN INDEX.HTML SCRIPT ---
 if (navigator.serviceWorker) {
     navigator.serviceWorker.addEventListener('message', event => {
         const data = event.data;
         
         if (data.type === 'SHARE_DATA') {
+            // Get the shared text/URL from the event data
             const sharedText = data.data.text || data.data.files?.[0]?.shareTarget?.text || '';
-            const sharedTitle = data.data.title || '';
             
-            const titleInput = document.getElementById('titleInput');
             const contentInput = document.getElementById('contentInput');
             
-            // 1. Insert Data
-            if (sharedTitle) {
-                titleInput.value = sharedTitle;
-            }
             if (sharedText) {
+                // Automatically fill the Body/Content field
                 contentInput.value = sharedText;
+                
+                // Optional: Automatically switch to the Work category to prompt for Function/Priority
+                document.getElementById('cat-work').checked = true;
+                updateTheme(true); 
+                
+                // Focus the Title field so the user knows what to do next
+                document.getElementById('titleInput').focus();
+
+                alert('Link shared! Content received. Now, please add a Title and hit CAPTURE.');
             }
-
-            // 2. Auto-Set Category (Crucial UX choice!)
-            // By default, we'll assume Work for a quick link capture
-            document.getElementById('cat-work').checked = true;
-            updateTheme(true); 
-            
-            // 3. Optional: Switch to the input field
-            titleInput.focus();
-
-            alert('Data received via Share Sheet! Title/Body populated.');
         }
     });
 }
