@@ -3,21 +3,15 @@ const { Client } = require('@notionhq/client');
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   
-  // --- 1. Determine the API Route ---
-  // If the request came from the Share Sheet, the path is /share-target.
-  // If it came from the PWA button, it will likely be /submit (or similar).
   const path = req.url; 
   
   if (req.method !== 'POST') {
-    // If it's a GET request, we should probably just serve the index page,
-    // but for API endpoints, we only allow POST.
     if (path.startsWith('/share-target')) {
         return res.status(405).json({ error: 'Share Target requires POST method' });
     }
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // --- 2. Parse Input Data ---
   const { title, content, category, functions, priority, interest } = req.body || {};
 
   try {
@@ -26,9 +20,8 @@ module.exports = async (req, res) => {
 
     const notion = new Client({ auth: process.env.NOTION_KEY.trim() });
 
-    // --- 3. Conditional Logic (Same as before) ---
     const dbProperties = {
-      Name: { title: [{ text: { content: title || "Untitled Shared Entry" } }] }, // Default title if user doesn't type one
+      Name: { title: [{ text: { content: title || "Untitled Shared Entry" } }] },
       Category: { select: { name: category || "Personal" } },
     };
 
@@ -47,7 +40,6 @@ module.exports = async (req, res) => {
         }
     }
 
-    // --- 4. Send to Notion ---
     const response = await notion.pages.create({
       parent: { database_id: process.env.NOTION_DB_ID.trim() },
       properties: dbProperties,
