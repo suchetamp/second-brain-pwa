@@ -11,5 +11,19 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "share_target": {
+    "action": "/share-target",  // This is a placeholder route name
+    "method": "POST",
+    "params": {
+      "title": "title",         // The name of the shared data field for the Title
+      "text": "content",        // The name of the shared data field for the Body
+      "files": [
+        {
+          "name": "link",
+          "accept": ["text/plain", "text/html", "image/*", "application/pdf"]
+        }
+      ]
+    }
+  }
 }
