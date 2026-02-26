@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/submit.js"
+    },
+    {
+      "source": "/share-target",
+      "destination": "/api/submit.js"
+    }
+  ]
+}
