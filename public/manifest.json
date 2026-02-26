@@ -16,11 +16,11 @@
     "action": "/share-target",
     "method": "POST",
     "params": {
-      "text": "content",   // This still captures the text content (which might be the URL)
+      "text": "content",   
       "files": [
         {
           "name": "link",
-          "accept": ["text/plain", "text/html", "image/*"] // Explicitly accept Text/HTML (URLs)
+          "accept": ["text/plain", "text/html", "image/*"] 
         }
       ]
     }
