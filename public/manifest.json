@@ -1,4 +1,3 @@
-
 {
   "name": "Second Brain",
   "short_name": "Brain",
@@ -18,8 +17,8 @@
     "action": "/share-target",
     "method": "POST",
     "params": {
-      "text": "content", 
-      "files": [  
+      "text": "content",
+      "files": [
         {
           "name": "link",
           "accept": ["text/plain", "text/html", "image/*"]
