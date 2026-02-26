@@ -1,6 +1,8 @@
+
 {
   "name": "Second Brain",
   "short_name": "Brain",
+  "id": "/",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#111827",
@@ -12,15 +14,15 @@
       "type": "image/png"
     }
   ],
- "share_target": {
+  "share_target": {
     "action": "/share-target",
     "method": "POST",
     "params": {
-      "text": "content",   
-      "files": [
+      "text": "content", 
+      "files": [  
         {
           "name": "link",
-          "accept": ["text/plain", "text/html", "image/*"] 
+          "accept": ["text/plain", "text/html", "image/*"]
         }
       ]
     }
