@@ -18,13 +18,9 @@
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": {
+      "title": "title",
       "text": "content",
-      "files": [
-        {
-          "name": "link",
-          "accept": ["text/plain", "text/html", "image/*"]
-        }
-      ]
+      "url": "link"
     }
   }
 }
